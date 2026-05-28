@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lưu Tư Hạ — PersonalWiki</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 14px;
+  line-height: 1.6;
+  background: #fff;
+  color: #202122;
+}
+
+.topbar {
+  background: #f8f9fa;
+  border-bottom: 1px solid #a2a9b1;
+  padding: 4px 0;
+  font-size: 12px;
+  font-family: sans-serif;
+}
+.topbar-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  color: #54595d;
+}
+.topbar-inner a { color: #0645ad; text-decoration: none; }
+.topbar-inner a:hover { text-decoration: underline; }
+
+header {
+  background: #fff;
+  border-bottom: 1px solid #a2a9b1;
+  padding: 8px 0;
+}
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.wiki-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+.wiki-logo-img {
+  width: 50px; height: 50px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  background: radial-gradient(circle at 30% 30%, #fff, #e8e8e8);
+  border: 1px solid #ddd;
+}
+.wiki-logo-img img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.wiki-logo-text { font-family: Georgia, serif; font-size: 20px; color: #202122; }
+.wiki-logo-sub { font-family: sans-serif; font-size: 11px; color: #54595d; line-height: 1; }
+
+.search-bar {
+  flex: 1;
+  max-width: 400px;
+  margin-left: auto;
+  display: flex;
+}
+.search-bar input {
+  flex: 1;
+  border: 1px solid #a2a9b1;
+  padding: 5px 10px;
+  font-size: 13px;
+  border-right: none;
+  outline: none;
+  background: #f8f9fa;
+}
+.search-bar button {
+  border: 1px solid #a2a9b1;
+  background: #f8f9fa;
+  padding: 5px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #202122;
+}
+
+.nav-tabs {
+  border-bottom: 1px solid #a2a9b1;
+  background: #fff;
+  font-family: sans-serif;
+}
+.nav-tabs-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+}
+.nav-tab {
+  padding: 6px 14px;
+  font-size: 13px;
+  color: #0645ad;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-bottom: none;
+  position: relative;
+  top: 1px;
+  text-decoration: none;
+  display: block;
+}
+.nav-tab.active {
+  background: #fff;
+  border-color: #a2a9b1;
+  border-bottom-color: #fff;
+  color: #202122;
+  font-weight: bold;
+}
+.nav-tab:hover:not(.active) { background: #eaf3fb; }
+
+.content-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  gap: 24px;
+}
+
+.sidebar {
+  width: 200px;
+  flex-shrink: 0;
+  padding-top: 16px;
+  font-family: sans-serif;
+  font-size: 13px;
+}
+.sidebar-box {
+  border: 1px solid #a2a9b1;
+  background: #f8f9fa;
+  padding: 8px 10px;
+  margin-bottom: 14px;
+}
+.sidebar-title {
+  font-weight: bold;
+  font-size: 12px;
+  border-bottom: 1px solid #a2a9b1;
+  padding-bottom: 5px;
+  margin-bottom: 8px;
+}
+.sidebar-link {
+  display: block;
+  color: #0645ad;
+  text-decoration: none;
+  padding: 2px 0;
+  font-size: 12px;
+  cursor: pointer;
+}
+.sidebar-link:hover { text-decoration: underline; }
+.sidebar-link.active { font-weight: bold; color: #202122; }
+.sidebar-sep { border: none; border-top: 1px solid #a2a9b1; margin: 6px 0; }
+
+main {
+  flex: 1;
+  min-width: 0;
+  padding: 16px 0;
+}
+
+.page-title {
+  font-family: Georgia, serif;
+  font-size: 28px;
+  font-weight: normal;
+  border-bottom: 1px solid #a2a9b1;
+  padding-bottom: 4px;
+  margin-bottom: 12px;
+  color: #202122;
+}
+
+.page-subtitle {
+  font-style: italic;
+  color: #54595d;
+  font-size: 13px;
+  margin-bottom: 14px;
+  font-family: sans-serif;
+}
+
+.infobox {
+  float: right;
+  clear: right;
+  margin: 0 0 16px 24px;
+  border: 1px solid #a2a9b1;
+  background: #f8f9fa;
+  width: 250px;
+  font-family: sans-serif;
+  font-size: 13px;
+}
+.infobox-title {
+  background: #cee0f2;
+  text-align: center;
+  font-weight: bold;
+  font-size: 13px;
+  padding: 6px 8px;
+  border-bottom: 1px solid #a2a9b1;
+}
+.infobox-img-wrap {
+  text-align: center;
+  padding: 12px 8px 6px;
+  border-bottom: 1px solid #a2a9b1;
+}
+
+/* ===== THAY ẢNH ĐẠI DIỆN =====
+   Để thay ảnh, thay đường dẫn "anh-dai-dien.jpg" bằng ảnh thật của bạn
+   Ví dụ: src="https://example.com/anh.jpg" hoặc src="./anh.jpg"
+   ================================ */
+.infobox-avatar {
+  width: 180px;
+  height: 200px;
+  object-fit: cover;
+  border: 1px solid #a2a9b1;
+  display: block;
+  margin: 0 auto;
+}
+.avatar-placeholder-wiki {
+  width: 180px;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, #e8eef8, #c9d9ef);
+  border: 1px solid #a2a9b1;
+  margin: 0 auto;
+  gap: 8px;
+}
+.avatar-placeholder-wiki .avi-icon { font-size: 60px; }
+.avatar-placeholder-wiki .avi-text { font-size: 11px; color: #54595d; }
+
+.infobox-img-caption {
+  font-size: 11px;
+  color: #54595d;
+  padding: 4px 8px 8px;
+  text-align: center;
+  font-style: italic;
+}
+.infobox table { width: 100%; border-collapse: collapse; }
+.infobox td {
+  padding: 4px 8px;
+  border-top: 1px solid #eaecf0;
+  vertical-align: top;
+  line-height: 1.4;
+}
+.infobox td:first-child { font-weight: bold; color: #202122; width: 45%; font-size: 12px; }
+.infobox td:last-child { color: #202122; font-size: 12px; }
+.infobox-footer {
+  background: #cee0f2;
+  text-align: center;
+  font-size: 11px;
+  padding: 4px;
+  color: #0645ad;
+  cursor: pointer;
+}
+
+.section { margin-bottom: 18px; }
+.section-h2 {
+  font-family: Georgia, serif;
+  font-size: 20px;
+  font-weight: normal;
+  border-bottom: 1px solid #a2a9b1;
+  margin-bottom: 8px;
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 3px;
+}
+.section-h2 .edit-link {
+  font-size: 12px;
+  font-family: sans-serif;
+  color: #0645ad;
+  font-weight: normal;
+  cursor: pointer;
+}
+.section-h2 .edit-link:hover { text-decoration: underline; }
+.section-h3 {
+  font-family: sans-serif;
+  font-size: 15px;
+  font-weight: bold;
+  margin: 12px 0 6px;
+  color: #202122;
+}
+
+p { margin-bottom: 10px; }
+
+.hatnote {
+  font-style: italic;
+  color: #54595d;
+  font-size: 13px;
+  margin-bottom: 10px;
+  padding-left: 1.6em;
+  font-family: sans-serif;
+}
+.hatnote::before { content: 'ℹ '; font-style: normal; }
+
+a.ref { color: #0645ad; text-decoration: none; }
+a.ref:hover { text-decoration: underline; }
+sup { font-size: 10px; color: #0645ad; cursor: pointer; }
+
+.toc {
+  display: inline-block;
+  background: #f8f9fa;
+  border: 1px solid #a2a9b1;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  font-family: sans-serif;
+  font-size: 13px;
+  min-width: 200px;
+}
+.toc-title { text-align: center; font-weight: bold; margin-bottom: 6px; font-size: 13px; }
+.toc ol { padding-left: 20px; }
+.toc li { padding: 2px 0; }
+.toc a { color: #0645ad; text-decoration: none; cursor: pointer; }
+.toc a:hover { text-decoration: underline; }
+.toc-sub { padding-left: 16px; list-style-type: decimal; }
+
+.wiki-table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 14px;
+  font-family: sans-serif;
+  font-size: 13px;
+}
+.wiki-table th {
+  background: #eaecf0;
+  border: 1px solid #a2a9b1;
+  padding: 5px 10px;
+  text-align: left;
+  font-weight: bold;
+}
+.wiki-table td {
+  border: 1px solid #a2a9b1;
+  padding: 5px 10px;
+  vertical-align: top;
+}
+.wiki-table tr:nth-child(even) td { background: #f8f9fa; }
+
+.categories {
+  border-top: 1px solid #a2a9b1;
+  padding-top: 8px;
+  margin-top: 20px;
+  font-family: sans-serif;
+  font-size: 13px;
+}
+.categories-title { font-weight: bold; margin-bottom: 6px; }
+.category-tag {
+  display: inline-block;
+  background: #f8f9fa;
+  border: 1px solid #a2a9b1;
+  padding: 2px 8px;
+  border-radius: 2px;
+  margin: 2px 4px 2px 0;
+  color: #0645ad;
+  cursor: pointer;
+  font-size: 12px;
+}
+.category-tag:hover { background: #eaf3fb; }
+
+footer {
+  background: #f8f9fa;
+  border-top: 1px solid #a2a9b1;
+  padding: 14px 20px;
+  font-family: sans-serif;
+  font-size: 12px;
+  color: #54595d;
+  margin-top: 24px;
+}
+.footer-inner { max-width: 1200px; margin: 0 auto; text-align: center; }
+.footer-links { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 8px; }
+.footer-links a { color: #0645ad; text-decoration: none; }
+.footer-links a:hover { text-decoration: underline; }
+
+.notice-box {
+  background: #eaf3fb;
+  border: 1px solid #a2a9b1;
+  border-left: 4px solid #3680b0;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  font-family: sans-serif;
+  font-size: 13px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.contact-links-wiki { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.wiki-link-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #f8f9fa;
+  border: 1px solid #a2a9b1;
+  padding: 3px 10px;
+  font-family: sans-serif;
+  font-size: 12px;
+  color: #0645ad;
+  text-decoration: none;
+  cursor: pointer;
+}
+.wiki-link-badge:hover { background: #eaf3fb; }
+
+.clearfix::after { content: ''; display: table; clear: both; }
+
+@media (max-width: 700px) {
+  .sidebar { display: none; }
+  .infobox { float: none; width: 100%; margin: 0 0 16px 0; }
+  .avatar-placeholder-wiki { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="#">Tạo tài khoản</a>
+    <a href="#">Đăng nhập</a>
+  </div>
+</div>
+
+<header>
+  <div class="header-inner">
+    <a class="wiki-logo" href="#">
+      <div class="wiki-logo-img"><img src="Zennomi.jpg" alt=""></div>
+      <div>
+        <div class="wiki-logo-text">Wiki of Wazxlyrisc</div>
+        <div class="wiki-logo-sub">Bách khoa toàn thư cá nhân(cho mấy thằng em Femboy)</div>
+      </div>
+    </a>
+    <div class="search-bar">
+      <input type="text" placeholder="Tìm kiếm trong wiki...">
+      <button>🔍</button>
+    </div>
+  </div>
+</header>
+
+<div class="nav-tabs">
+  <div class="nav-tabs-inner">
+    <a class="nav-tab active">Bài viết</a>
+    <a class="nav-tab">Thảo luận</a>
+    <a class="nav-tab">Xem mã nguồn</a>
+    <a class="nav-tab">Lịch sử</a>
+  </div>
+</div>
+
+<div class="content-wrapper">
+
+  <aside class="sidebar">
+    <div class="sidebar-box">
+      <div class="sidebar-title">Điều hướng</div>
+      <a class="sidebar-link active" href="#">Trang chính</a>
+      <a class="sidebar-link" href="#">Giới thiệu bản thân</a>
+      <a class="sidebar-link" href="#">Thành tích</a>
+      <a class="sidebar-link" href="#">Liên hệ</a>
+      <hr class="sidebar-sep">
+      <a class="sidebar-link" href="#">Thay đổi gần đây</a>
+      <a class="sidebar-link" href="#">Trang ngẫu nhiên</a>
+    </div>
+    <div class="sidebar-box">
+      <div class="sidebar-title">Công cụ</div>
+      <a class="sidebar-link" href="#">Liên kết đến đây</a>
+      <a class="sidebar-link" href="#">Tải lên tệp</a>
+      <a class="sidebar-link" href="#">Trang đặc biệt</a>
+      <a class="sidebar-link" href="#">Thông tin trang</a>
+    </div>
+    <div class="sidebar-box">
+      <div class="sidebar-title">Ngôn ngữ khác</div>
+      <a class="sidebar-link" href="#">English</a>
+      <a class="sidebar-link" href="#">日本語</a>
+      <a class="sidebar-link" href="#">한국어</a>
+    </div>
+  </aside>
+
+  <main>
+
+    <!-- ===== TIÊU ĐỀ TRANG — THAY TÊN CỦA BẠN ===== -->
+    <h1 class="page-title">Lưu Tư Hạ</h1>
+    <p class="page-subtitle">Bài viết này nói về thông tin cá nhân của Lưu Tư Hạ — một công dân Việt Nam sinh sống tại Đông Anh.</p>
+
+    <div class="notice-box">
+      <span>📝</span>
+      <span>Bài viết này đang trong giai đoạn hoàn thiện. Bạn có thể giúp mở rộng nội dung bằng cách nhấn <b>[sửa]</b> ở mỗi mục. (Tốt nhất là đừng sửa, có bug thì tự đi fix đi)</span>
+    </div>
+
+    <div class="clearfix">
+
+      <!-- ===== INFOBOX ===== -->
+      <div class="infobox">
+        <div class="infobox-title">Lưu Tư Hạ</div>
+        <div class="infobox-img-wrap">
+          <!--
+            ĐỂ THAY ẢNH THẬT:
+            1. Xoá thẻ <div class="avatar-placeholder-wiki">...</div> bên dưới
+            2. Bỏ comment thẻ <img> bên dưới và thay đường dẫn ảnh
+            Ví dụ: <img class="infobox-avatar" src="anh-cua-ban.jpg" alt="Ảnh đại diện">
+          -->
+          <img class="infobox-avatar" src="vương quốc an female v2.jpg" alt="Ảnh đại diện">
+          <!-- <div class="avatar-placeholder-wiki">
+            <span class="avi-icon">🙋</span>
+            <span class="avi-text">Ảnh đại diện</span>
+          </div> -->
+        </div>
+        <div class="infobox-img-caption">Ảnh chân dung cá nhân<br><i>Hải Phòng, 2024</i></div>
+        <table>
+          <tr><td>Họ và tên</td><td><b>Lưu Tư Hạ</b></td></tr>
+          <tr><td>Ngày sinh</td><td>20 tháng 5, 2026<br><small>(8 ngày tuổi)</small></td></tr>
+          <tr><td>Nơi sinh</td><td>Hà Nội, Việt Nam</td></tr>
+          <tr><td>Quốc tịch</td><td>🇻🇳 Việt Nam</td></tr>
+          <tr><td>Nghề nghiệp</td><td>Lập trình viên (Thật ra là thằng Wazxlyrisc làm)</td></tr>
+          <tr><td>Người giám hộ</td><td>Vương Quốc An (bố)<br>Vương Quốc An (mẹ) (bất ngờ lắm à?)</td></tr>
+          <tr><td>Học vấn</td><td>Đại học Giao thông vận tải Hà Nội (chuẩn bị vào)</td></tr>
+          <tr><td>Liên hệ</td><td><a href="quocanvuong78@gmail.com" class="ref">quocanvuong78@gmail.com</a></td></tr>
+        </table>
+        <div class="infobox-footer">Xem thông tin chi tiết</div>
+      </div>
+
+      <!-- TOC -->
+      <div class="toc">
+        <div class="toc-title">Mục lục</div>
+        <ol>
+          <li><a href="#tieuso">Tiểu sử</a>
+            <ol class="toc-sub">
+              <li><a href="#thoithoau">Thời thơ ấu</a></li>
+              <li><a href="#hocvan">Học vấn</a></li>
+            </ol>
+          </li>
+          <li><a href="#giadinh">Gia đình</a></li>
+          <li><a href="#soThich">Sở thích &amp; Hoạt động</a></li>
+          <li><a href="#thanhtich">Thành tích</a></li>
+          <li><a href="#lienhe">Liên hệ &amp; Mạng xã hội</a></li>
+          <li><a href="#thamkhao">Tham khảo</a></li>
+        </ol>
+      </div>
+
+      <p>
+        <b>Lưu Tư Hạ</b> (sinh ngày 20 tháng 5 năm 2026) là một <a href="#" class="ref">lập trình viên</a> người Việt Nam, hiện đang sinh sống và làm việc tại <a href="#" class="ref">Hà Nội</a>, Việt Nam. Cô được biết đến là người có niềm đam mê mạnh mẽ với công nghệ, lập trình phần mềm và không ngừng học hỏi những kiến thức mới trong lĩnh vực công nghệ thông tin.<sup>[1]</sup>
+      </p>
+      <p>
+        Cô tốt nghiệp ngành <a href="#" class="ref">Công nghệ Thông tin</a> tại Đại học Giao thông Vận tải Hà Nội và hiện đang làm việc với nhiều dự án phần mềm đa dạng, từ phát triển ứng dụng web đến các hệ thống xử lý dữ liệu quy mô lớn.<sup>[2]</sup>
+      </p>
+
+      <!-- SECTION 1 -->
+      <h2 class="section-h2" id="tieuso">1. Tiểu sử <span class="edit-link">[sửa]</span></h2>
+
+      <h3 class="section-h3" id="thoithoau">1.1 Thời thơ ấu</h3>
+      <p>
+        Lưu Tư Hạ sinh ra và lớn lên tại <a href="#" class="ref">Hà Nội</a> — thành phố lớn nhất miền Bắc Việt Nam. Từ nhỏ, cô đã bộc lộ niềm đam mê với các thiết bị điện tử và máy tính, thường xuyên tự mày mò tìm hiểu cách các thiết bị công nghệ hoạt động.<sup>[3]</sup>
+      </p>
+      <p>
+        Lớn lên trong một gia đình có truyền thống coi trọng giáo dục, cô luôn đạt thành tích học tập tốt tại các trường học ở Hà Nội. Năm 18 tuổi (cụ thể là 8 ngày), cô đạt điểm cao trong kỳ thi đại học và trúng tuyển vào ngành Công nghệ Thông tin.<sup>[4]</sup>
+      </p>
+
+      <h3 class="section-h3" id="hocvan">1.2 Học vấn</h3>
+      <p>
+        Cô theo học chương trình <b>Cử nhân Công nghệ Thông tin</b> tại <a href="#" class="ref">Đại học Giao thông vận tải Hà Nội</a> giai đoạn ???. Trong thời gian học đại học, cô tích cực tham gia các câu lạc bộ lập trình, hackathon và các dự án nghiên cứu khoa học sinh viên.<sup>[5]</sup>
+      </p>
+
+      <!-- SECTION 2 -->
+      <h2 class="section-h2" id="giadinh">2. Gia đình <span class="edit-link">[sửa]</span></h2>
+      <p>Lưu Tư Hạ xuất thân từ một gia đình người Việt truyền thống tại Hà Nội. Cô hiện sống cùng gia đình, dưới sự bảo hộ của:</p>
+      <table class="wiki-table">
+        <tr>
+          <th>Quan hệ</th>
+          <th>Họ và tên</th>
+          <th>Ghi chú</th>
+        </tr>
+        <tr>
+          <td>Bố</td>
+          <td>Vương Quốc An</td>
+          <td>Người giám hộ chính</td>
+        </tr>
+        <tr>
+          <td>Mẹ</td>
+          <td>Vương Quốc An</td>
+          <td>Người giám hộ phụ</td>
+        </tr>
+      </table>
+
+      <!-- SECTION 3 -->
+      <h2 class="section-h2" id="soThich">3. Sở thích &amp; Hoạt động <span class="edit-link">[sửa]</span></h2>
+      <div class="hatnote">Xem thêm: Hoạt động ngoại khóa của Lưu Tư Hạ</div>
+      <p>Ngoài công việc chuyên môn, Lưu Tư Hạ có nhiều sở thích đa dạng phản ánh tính cách năng động và ham học hỏi của cô:</p>
+      <table class="wiki-table">
+        <tr>
+          <th>Sở thích</th>
+          <th>Mô tả</th>
+          <th>Mức độ</th>
+        </tr>
+        <tr>
+          <td>💻 Lập trình</td>
+          <td>Xây dựng ứng dụng web, khám phá công nghệ mới</td>
+          <td>★★★★★</td>
+        </tr>
+        <tr>
+          <td>📚 Đọc sách</td>
+          <td>Sách kỹ thuật, khoa học viễn tưởng, phát triển bản thân</td>
+          <td>★★★★☆</td>
+        </tr>
+        <tr>
+          <td>🎵 Âm nhạc</td>
+          <td>Nghe và thưởng thức các thể loại nhạc đa dạng</td>
+          <td>★★★★☆</td>
+        </tr>
+        <tr>
+          <td>✈️ Du lịch</td>
+          <td>Khám phá các vùng đất và văn hóa mới</td>
+          <td>★★★☆☆</td>
+        </tr>
+        <tr>
+          <td>🏃 Thể thao</td>
+          <td>Chạy bộ, bơi lội, các môn thể thao ngoài trời</td>
+          <td>★★★☆☆</td>
+        </tr>
+        <tr>
+          <td>📷 Nhiếp ảnh</td>
+          <td>Ghi lại những khoảnh khắc đẹp trong cuộc sống</td>
+          <td>★★★☆☆</td>
+        </tr>
+      </table>
+
+      <!-- SECTION 4 -->
+      <h2 class="section-h2" id="thanhtich">4. Thành tích <span class="edit-link">[sửa]</span></h2>
+      <p>Một số thành tích nổi bật trong quá trình học tập và làm việc:</p>
+      <ul style="margin-left:24px; margin-bottom:10px; line-height:2;">
+        <li>🏆 Giải Nhất cuộc thi Lập trình sinh viên cấp trường (2020)</li>
+        <li>🥈 Giải Nhì Hackathon Wazxlyrisc Tech Festival (2021)</li>
+        <li>📜 Chứng chỉ AWS Certified Developer (2022)</li>
+        <li>🌟 Top 10 dự án Open Source nổi bật tại GitHub Vietnam (2023)</li>
+      </ul>
+
+      <!-- SECTION 5 -->
+      <h2 class="section-h2" id="lienhe">5. Liên hệ &amp; Mạng xã hội <span class="edit-link">[sửa]</span></h2>
+      <p>Vương Quốc An hiện đang hoạt động trên nhiều nền tảng trực tuyến. Có thể liên hệ qua các kênh sau:</p>
+      <div class="contact-links-wiki">
+        <a href="mailto:hello@email.com" class="wiki-link-badge">📧 Email: quocanvuong78@gmail.com</a>
+        <a href="https://www.facebook.com/vuong.quoc.an.198076" target="_blank" class="wiki-link-badge">👤 Facebook: Vương Quốc An</a>
+        <a href="https://instagram.com/nguyenvana" target="_blank" class="wiki-link-badge">📸 Instagram: ???</a>
+        <a href="https://github.com/WazxLyrisc" target="_blank" class="wiki-link-badge">🐙 GitHub: Wazxlyrisc</a>
+        <a href="#" class="wiki-link-badge">💬 Zalo: ???</a>
+        <a href="https://linkedin.com/in/nguyenvana" target="_blank" class="wiki-link-badge">💼 LinkedIn: ???</a>
+      </div>
+
+      <!-- SECTION 6 -->
+      <h2 class="section-h2" id="thamkhao">6. Tham khảo <span class="edit-link">[sửa]</span></h2>
+      <ol style="margin-left:24px; font-family:sans-serif; font-size:12px; color:#54595d; line-height:2;">
+        <li>Thông tin cá nhân tự khai báo, 2024.</li>
+        <li>Hồ sơ nghề nghiệp LinkedIn, truy cập tháng 1/2024.</li>
+        <li>Phỏng vấn gia đình, Hải Phòng, 2024.</li>
+        <li>Hồ sơ tuyển sinh Đại học Giao thông vận tải Hà Nội, 2018.</li>
+        <li>Kết quả học tập đại học, Khoa CNTT, 2022.</li>
+      </ol>
+
+    </div><!-- end clearfix -->
+
+    <div class="categories">
+      <div class="categories-title">Thể loại:</div>
+      <span class="category-tag">Người Việt Nam</span>
+      <span class="category-tag">Sinh năm 2000</span>
+      <span class="category-tag">Lập trình viên</span>
+      <span class="category-tag">Người thực vật</span>
+      <span class="category-tag">Cựu sinh viên UTC</span>
+      <span class="category-tag">Nhân vật công nghệ</span>
+    </div>
+
+  </main>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-links">
+      <a href="#">Chính sách bảo mật</a>
+      <a href="#">Giới thiệu về Wki of Wazxlyrisc</a>
+      <a href="#">Tuyên bố miễn trừ trách nhiệm</a>
+      <a href="#">Điều khoản sử dụng</a>
+      <a href="#">Phiên bản di động</a>
+    </div>
+    <p>Nội dung được cung cấp theo <a href="#" style="color:#0645ad;">Giấy phép, bản quyền thuộc về WazxLyrisc</a>. Wiki of Wazxlyrisc® là nền tảng wiki cá nhân.</p>
+    <p style="margin-top:4px;">Trang này được chỉnh sửa lần cuối vào ngày 28 tháng 5, 2026 lúc 10:00 (UTC+7).</p>
+  </div>
+</footer>
+
+</body>
+</html>
