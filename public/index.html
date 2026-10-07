@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chat với Lyrisc (bản AI)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+  <link rel="icon" href="./Zennomi.jpg" type="image/svg+xml">
+</head>
+
+<body>
+  <main class="layout">
+    <section class="card chat" aria-label="Chatbot">
+      <header class="bot-head">
+        <img src="./Cosplay Miku.jpg" alt="Ảnh đại diện" class="avatar">
+        <div>
+          <h1>WazxLyrisc</h1>
+          <p>Đừng hỏi vì sao AI trở lời hơn 1 phút hoặc không trả lời luôn vì mình không có tiền mua Token </p>
+        </div>
+      </header>
+      <div id="messages" class="messages" aria-live="polite"></div>
+      <form id="chat-form" class="composer">
+        <input id="chat-input" type="text" placeholder="Nhắn gì đó cho Lyrisc..." autocomplete="off" maxlength="500"
+          required>
+        <button type="submit" id="send-btn">Gửi</button>
+      </form>
+    </section>
+
+    <aside class="card feedback" aria-label="Phản hồi">
+      <h2>Góc feedback</h2>
+      <p class="hint">Muốn WazxLyrisc làm gì trong tương lai thì ghi hết vào đây nhé !</p>
+      <form id="fb-form">
+        <label>Tên (không bắt buộc)
+          <input id="fb-name" type="text" maxlength="60">
+        </label>
+        <fieldset class="stars">
+          <legend>Khoan Hoid up, thấy AI dùng như thế nào ? Mình xin một vote nhé!!!</legend>
+          <input type="hidden" id="fb-rating" value="0">
+          <div id="star-row"></div>
+        </fieldset>
+        <label>Nội dung
+          <textarea id="fb-msg" rows="5" maxlength="1500" required></textarea>
+        </label>
+        <button type="submit">Gửi phản hồi</button>
+        <p id="fb-status" role="status"></p>
+      </form>
+    </aside>
+  </main>
+  <script src="./script.js"></script>
+</body>
+
+</html>
