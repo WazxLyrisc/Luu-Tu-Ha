@@ -21,12 +21,26 @@
 
   // ---------- Giọng nói (Web Speech API của trình duyệt) ----------
   const hasTTS = "speechSynthesis" in window;
+  // Chọn giọng đọc: ưu tiên tên bạn ghi trong config (voice.name), rồi đến giọng nữ, tránh giọng nam.
+  const MALE_RE = /namminh|nam minh|\bmale\b|\bnam\b|microsoft an\b/i;
+  const FEMALE_RE = /hoaimy|hoai my|linh|female|nữ|google (tiếng việt|vietnamese)/i;
   function pickVoice(lang) {
-    const base = lang.split("-")[0].toLowerCase();
-    const list = speechSynthesis.getVoices();
-    return list.find(v => v.lang.toLowerCase() === lang.toLowerCase())
-        || list.find(v => v.lang.toLowerCase().startsWith(base));
+    const norm = x => x.toLowerCase().replace("_", "-");
+    const base = norm(lang).split("-")[0];
+    const all = speechSynthesis.getVoices();
+    const same = all.filter(v => norm(v.lang) === norm(lang));
+    const list = same.length ? same : all.filter(v => norm(v.lang).startsWith(base));
+    if (!list.length) return null;
+    const wanted = (cfg.voice?.name || "").toLowerCase();
+    if (wanted) {
+      const byName = list.find(v => v.name.toLowerCase().includes(wanted));
+      if (byName) return byName;
+    }
+    return list.find(v => FEMALE_RE.test(v.name) && !MALE_RE.test(v.name))
+        || list.find(v => !MALE_RE.test(v.name))
+        || list[0];
   }
+  if (hasTTS) speechSynthesis.getVoices();   // kích hoạt việc tải danh sách giọng sớm
   function renderVoiceBtn() {
     voiceBtn.setAttribute("aria-pressed", String(voiceOn));
     voiceBtn.textContent = voiceOn ? "Giọng nói: bật" : "Giọng nói: tắt";
@@ -53,7 +67,12 @@
     u.rate = cfg.voice?.rate || 1;
     u.pitch = cfg.voice?.pitch || 1;
     const v = pickVoice(u.lang);
-    if (v) u.voice = v;
+    if (v) {
+      u.voice = v;
+      // Máy chỉ có giọng nam: nâng cao độ lên một chút cho gần giọng nữ hơn
+      if (MALE_RE.test(v.name) && !FEMALE_RE.test(v.name)) u.pitch = Math.max(u.pitch, cfg.voice?.pitchIfMale || 1.35);
+      console.info("[vtuber] giọng đang dùng:", v.name, v.lang);
+    }
     u.onstart = () => { ttsSpeaking = true; setChip("đang nói..."); };
     u.onend = u.onerror = () => { ttsSpeaking = false; setChip(""); };
     speechSynthesis.speak(u);
