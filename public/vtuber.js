@@ -22,7 +22,7 @@
   // ---------- Giọng nói (Web Speech API của trình duyệt) ----------
   const hasTTS = "speechSynthesis" in window;
   // Chọn giọng đọc: ưu tiên tên bạn ghi trong config (voice.name), rồi đến giọng nữ, tránh giọng nam.
-//   const MALE_RE = /namminh|nam minh|\bmale\b|\bnam\b|microsoft an\b/i;
+  const MALE_RE = /namminh|nam minh|\bmale\b|\bnam\b|microsoft an\b/i;
   const FEMALE_RE = /hoaimy|hoai my|linh|female|nữ|google (tiếng việt|vietnamese)/i;
   function pickVoice(lang) {
     const norm = x => x.toLowerCase().replace("_", "-");
