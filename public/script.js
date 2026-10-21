@@ -10,7 +10,7 @@ function addMsg(text, who, extra = "") {
   return d;
 }
 
-addMsg("Ê chào nha! Mình là WazxLyrisc, hỏi gì cũng được 😄 hết nhé !", "bot");
+addMsg("Ê chào nha! Mình là bản sao AI của Lyrisc, hỏi gì cũng được 😄", "bot");
 
 form.addEventListener("submit", async e => {
   e.preventDefault();
@@ -19,15 +19,20 @@ form.addEventListener("submit", async e => {
   input.value = ""; sendBtn.disabled = true;
   addMsg(text, "user"); history.push({ role: "user", text });
   const typing = addMsg("đang gõ...", "bot", "typing");
+  window.vtuber?.thinking(true);
   try {
     const r = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ history }) });
     const data = await r.json();
     typing.remove();
     if (!r.ok) throw new Error(data.error || "Lỗi không xác định");
-    addMsg(data.reply, "bot"); history.push({ role: "model", text: data.reply });
+    addMsg(data.reply, "bot");
+    // Lưu kèm thẻ cảm xúc để Gemini giữ đúng định dạng ở các lượt sau
+    history.push({ role: "model", text: `[${data.emotion || "neutral"}] ${data.reply}` });
+    window.vtuber?.react(data.emotion, data.reply);
   } catch (err) {
     typing.remove(); history.pop(); addMsg("⚠️ " + err.message, "bot");
-  } finally { sendBtn.disabled = false; input.focus(); }
+    window.vtuber?.react("surprised", "");
+  } finally { window.vtuber?.thinking(false); sendBtn.disabled = false; input.focus(); }
 });
 
 // ---- Feedback ----

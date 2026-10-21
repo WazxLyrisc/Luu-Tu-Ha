@@ -9,6 +9,21 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const { GEMINI_API_KEY, GEMINI_MODEL = "gemini-2.5-flash", PORT = 3000, DISCORD_WEBHOOK_URL, ADMIN_KEY } = process.env;
 if (!GEMINI_API_KEY) { console.error("Thiếu GEMINI_API_KEY trong file .env"); process.exit(1); }
 
+// ====== Vtuber: cảm xúc để nhân vật biểu cảm theo câu trả lời ======
+const EMOTIONS = ["neutral", "happy", "sad", "angry", "surprised", "shy", "think"];
+const EMOTION_RULE = `
+
+# Định dạng bắt buộc (hệ thống Vtuber)
+Mỗi câu trả lời PHẢI bắt đầu bằng đúng một thẻ cảm xúc trong ngoặc vuông, chọn một trong: ${EMOTIONS.map(e => `[${e}]`).join(" ")}, rồi mới đến lời thoại. Thẻ chỉ để điều khiển biểu cảm của nhân vật nên đừng nhắc đến nó trong lời thoại. Ví dụ: "[happy] Ê chào nha, nay có gì vui không?"`;
+
+function splitEmotion(raw = "") {
+  const m = raw.match(/^\s*\[([a-z]+)\]/i);
+  const tag = m?.[1]?.toLowerCase();
+  const emotion = EMOTIONS.includes(tag) ? tag : "neutral";
+  const tagRe = new RegExp(`\\[(${EMOTIONS.join("|")})\\]`, "gi");
+  return { emotion, reply: raw.replace(/^\s*\[[a-z]+\]\s*/i, "").replace(tagRe, "").replace(/ {2,}/g, " ").trim() };
+}
+
 const app = express();
 app.set("trust proxy", 1); // cần khi chạy sau proxy của Render
 app.use(express.json({ limit: "50kb" }));
@@ -44,7 +59,7 @@ app.post("/api/chat", limiter, async (req, res) => {
           method: "POST",
           headers: { "Content-Type": "application/json", "x-goog-api-key": GEMINI_API_KEY },
           body: JSON.stringify({
-            systemInstruction: { parts: [{ text: PERSONA }] },
+            systemInstruction: { parts: [{ text: PERSONA + EMOTION_RULE }] },
             contents,
             generationConfig: { temperature: 1.0, maxOutputTokens: 600 }
           })
@@ -59,7 +74,8 @@ app.post("/api/chat", limiter, async (req, res) => {
     }
     if (!ok) throw new Error(data?.error?.message || "Gemini lỗi");
     const reply = data.candidates?.[0]?.content?.parts?.map(p => p.text).join("");
-    res.json({ reply: reply || "Ơ mình bị đứng hình chút, bạn nói lại được không?" });
+    const { emotion, reply: clean } = splitEmotion(reply || "");
+    res.json({ reply: clean || "Ơ mình bị đứng hình chút, bạn nói lại được không?", emotion: clean ? emotion : "surprised" });
   } catch (e) {
     console.error(e.message);
     res.status(500).json({ error: "Bot đang gặp sự cố, thử lại sau nhé." });
